@@ -1,7 +1,7 @@
 {
   "name": "homebridge-plugin-command",
   "version": "1.0.0",
-  "description": "Homebridge plugin which creates switches that can run commands and get status from it.",
+  "description": "This Homebridge plugin enables you to create virtual switches that can run any custom command when it is turned on or off.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
