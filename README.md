@@ -15,6 +15,6 @@ By default, `check_status` assumes turned on if the exit code of the command is 
   "turn_on": "touch /tmp/testFile",
   "turn_off": "rm /tmp/testFile",
   "check_status": "ls /tmp/testFile",
-  "invert_status": false,
+  "invert_status": false
 }
 ```
