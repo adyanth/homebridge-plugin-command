@@ -1,0 +1,29 @@
+{
+  "name": "homebridge-plugin-command",
+  "version": "1.0.0",
+  "description": "Homebridge plugin which creates switches that can run commands and get status from it.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adyanth/homebridge-plugin-command"
+  },
+  "keywords": [
+    "homebridge-plugin",
+    "homebridge-plugin-command"
+  ],
+  "author": "adyanth",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/adyanth/homebridge-plugin-command/issues"
+  },
+  "homepage": "https://github.com/adyanth/homebridge-plugin-command",
+  "dependencies": {
+  }
+}
