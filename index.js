@@ -4,14 +4,28 @@ module.exports = function (api) {
   api.registerAccessory("homebridge-plugin-command", "Command Accessory", CommandAccessoryPlugin);
 }
 
+function durationSeconds(timeExpr) {
+  if (!isNaN(timeExpr)) {
+    return parseInt(timeExpr, 10);
+  }
+  var units = { 'd': 86400, 'h': 3600, 'm': 60, 's': 1 };
+  var regex = /(\d+)([dhms])/g;
+
+  let seconds = 0;
+  var match;
+  while ((match = regex.exec(timeExpr))) {
+    seconds += parseInt(match[1], 10) * units[match[2]];
+  }
+
+  return seconds;
+}
+
 class CommandAccessoryPlugin {
   constructor(log, config, api) {
     this.log = log;
     this.config = config;
     this.api = api;
     this.currentState = false;
-
-    this.log.debug(`Command Accessory Plugin: ${this.config.name} Loaded`);
 
     // your accessory must have an AccessoryInformation service
     this.informationService = new this.api.hap.Service.AccessoryInformation()
@@ -26,6 +40,27 @@ class CommandAccessoryPlugin {
     this.switchService.getCharacteristic(this.api.hap.Characteristic.On)
       .onGet(this.getState.bind(this))   // bind to getStateHandler method below
       .onSet(this.setState.bind(this));  // bind to setStateHandler method below
+
+    if (this.config.check_status && this.config.poll_check) {
+      let secs = durationSeconds(this.config.poll_check);
+      if (isNaN(secs) || secs < 1) {
+        this.log.error("Too frequent or incorrect poll check time, polling disabled.");
+        return;
+      }
+      this.log.info(`Setting poll interval to ${secs}s`);
+      this.interval = setInterval(async () => {
+        this.log.debug("Polling status");
+        let oldState = this.currentState;
+        if (await this.getState(secs * 1000) != oldState) {
+          this.log.debug("Updating state")
+          this.switchService.getCharacteristic(this.api.hap.Characteristic.On)
+            .updateValue(this.currentState);
+        }
+        this.log.debug(`Polling done`);
+      }, secs * 1000);
+    }
+
+    this.log.info(`Command Accessory Plugin Loaded`);
   }
 
   getServices() {
@@ -35,8 +70,8 @@ class CommandAccessoryPlugin {
     ];
   }
 
-  async getState() {
-    this.log.info(`Getting ${this.config.name} switch state`);
+  async getState(timeout = undefined) {
+    this.log.debug(`Getting switch state`);
 
     if (!this.config.check_status) {
       this.log.debug(`No check_status, returning static state: ${this.currentState}`)
@@ -45,20 +80,19 @@ class CommandAccessoryPlugin {
 
     this.log.debug(`Running: ${this.config.check_status}`);
 
-    let state = null;
     try {
-      execSync(this.config.check_status);
-      state = !this.config.invert_status;
+      execSync(this.config.check_status, { timeout: timeout });
+      this.currentState = !this.config.invert_status;
     } catch (error) {
-      state = false;
+      this.currentState = false;
     }
 
-    this.log.debug(`Returning: ${state}`);
-    return state;
+    this.log.debug(`Returning: ${this.currentState}`);
+    return this.currentState;
   }
 
   async setState(value) {
-    this.log.info(`Setting ${this.config.name} switch state to: `, value);
+    this.log.debug(`Setting switch state to: `, value);
 
     let cmd = value ? this.config.turn_on : this.config.turn_off;
     let exitCode = 1;
