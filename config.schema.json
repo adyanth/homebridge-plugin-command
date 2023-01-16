@@ -1,5 +1,5 @@
 {
-    "pluginAlias": "homebridge-plugin-command",
+    "pluginAlias": "Command Accessory",
     "pluginType": "accessory",
     "singular": false,
     "headerDisplay": "Add a command based accessory below",
