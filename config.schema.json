@@ -1,0 +1,48 @@
+{
+    "pluginAlias": "homebridge-plugin-command",
+    "pluginType": "accessory",
+    "singular": false,
+    "headerDisplay": "Add a command based accessory below",
+    "schema": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "title": "Name",
+                "type": "string",
+                "default": "Sample Command",
+                "description": "Name to be shown for the device",
+                "required": true
+            },
+            "turn_on": {
+                "title": "Command on turn on",
+                "type": "string",
+                "description": "Command to run when the switch is turned on",
+                "required": true
+            },
+            "turn_off": {
+                "title": "Command on turn off",
+                "type": "string",
+                "description": "Command to run when the switch is turned off",
+                "required": true
+            },
+            "check_status": {
+                "title": "(Optional) Command to check status",
+                "type": "string",
+                "description": "(Optional) Command to run to check the current status"
+            },
+            "invert_status": {
+                "title": "Invert check status exit code",
+                "type": "boolean",
+                "default": false,
+                "description": "Exit code 0 is turned off (applies to check status only)"
+            }
+        },
+        "required": [
+            "name",
+            "turn_on",
+            "turn_off"
+        ]
+    },
+    "form": null,
+    "display": null
+}
