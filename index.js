@@ -1,7 +1,7 @@
 const { execSync } = require('child_process');
 
 module.exports = function (api) {
-  api.registerAccessory("homebridge-plugin-command", "Command Accessory", CommandAccessoryPlugin);
+  api.registerAccessory("Command Accessory", CommandAccessoryPlugin);
 }
 
 function durationSeconds(timeExpr) {
