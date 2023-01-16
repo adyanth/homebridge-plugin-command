@@ -30,6 +30,11 @@
                 "type": "string",
                 "description": "(Optional) Command to run to check the current status"
             },
+            "poll_check": {
+                "title": "(Optional) Interval to check status for changes automatically",
+                "type": "string",
+                "description": "(Optional) Interval in seconds or 5d2h3m10s format to check for status and update. Make sure that the command completes within this time, else it will not be considered. Needs to have the status command set."
+            },
             "invert_status": {
                 "title": "Invert check status exit code",
                 "type": "boolean",

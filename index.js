@@ -4,6 +4,22 @@ module.exports = function (api) {
   api.registerAccessory("homebridge-plugin-command", "Command Accessory", CommandAccessoryPlugin);
 }
 
+function durationSeconds(timeExpr) {
+  if (!isNaN(timeExpr)) {
+    return parseInt(timeExpr, 10);
+  }
+  var units = { 'd': 86400, 'h': 3600, 'm': 60, 's': 1 };
+  var regex = /(\d+)([dhms])/g;
+
+  let seconds = 0;
+  var match;
+  while ((match = regex.exec(timeExpr))) {
+    seconds += parseInt(match[1], 10) * units[match[2]];
+  }
+
+  return seconds;
+}
+
 class CommandAccessoryPlugin {
   constructor(log, config, api) {
     this.log = log;
@@ -24,6 +40,25 @@ class CommandAccessoryPlugin {
     this.switchService.getCharacteristic(this.api.hap.Characteristic.On)
       .onGet(this.getState.bind(this))   // bind to getStateHandler method below
       .onSet(this.setState.bind(this));  // bind to setStateHandler method below
+
+    if (this.config.check_status && this.config.poll_check) {
+      let secs = durationSeconds(this.config.poll_check);
+      if (isNaN(secs) || secs < 1) {
+        this.log.error("Too frequent or incorrect poll check time, polling disabled.");
+        return;
+      }
+      this.log.info(`Setting poll interval to ${secs}s`);
+      this.interval = setInterval(async () => {
+        this.log.debug("Polling status");
+        let oldState = this.currentState;
+        if (await this.getState(secs * 1000) != oldState) {
+          this.log.debug("Updating state")
+          this.switchService.getCharacteristic(this.api.hap.Characteristic.On)
+            .updateValue(this.currentState);
+        }
+        this.log.debug(`Polling done`);
+      }, secs * 1000);
+    }
 
     this.log.info(`Command Accessory Plugin Loaded`);
   }
