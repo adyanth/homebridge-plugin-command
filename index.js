@@ -35,7 +35,7 @@ class CommandAccessoryPlugin {
     ];
   }
 
-  async getState() {
+  async getState(timeout = undefined) {
     this.log.debug(`Getting switch state`);
 
     if (!this.config.check_status) {
@@ -45,16 +45,15 @@ class CommandAccessoryPlugin {
 
     this.log.debug(`Running: ${this.config.check_status}`);
 
-    let state = null;
     try {
-      execSync(this.config.check_status);
-      state = !this.config.invert_status;
+      execSync(this.config.check_status, { timeout: timeout });
+      this.currentState = !this.config.invert_status;
     } catch (error) {
-      state = false;
+      this.currentState = false;
     }
 
     this.log.debug(`Returning: ${this.currentState}`);
-    return state;
+    return this.currentState;
   }
 
   async setState(value) {
