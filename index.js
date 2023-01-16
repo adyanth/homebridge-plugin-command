@@ -1,7 +1,7 @@
 const { execSync } = require('child_process');
 
 module.exports = function (api) {
-  api.registerAccessory("homebridge-plugin-command", "commandAccessory", CommandAccessoryPlugin);
+  api.registerAccessory("homebridge-plugin-command", "Command Accessory", CommandAccessoryPlugin);
 }
 
 class CommandAccessoryPlugin {
@@ -11,7 +11,7 @@ class CommandAccessoryPlugin {
     this.api = api;
     this.currentState = false;
 
-    this.log.debug('Command Accessory Plugin Loaded');
+    this.log.debug(`Command Accessory Plugin: ${this.config.name} Loaded`);
 
     // your accessory must have an AccessoryInformation service
     this.informationService = new this.api.hap.Service.AccessoryInformation()
