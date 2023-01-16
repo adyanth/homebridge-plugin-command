@@ -81,9 +81,11 @@ class CommandAccessoryPlugin {
     this.log.debug(`Running: ${this.config.check_status}`);
 
     try {
-      execSync(this.config.check_status, { timeout: timeout });
+      let stdout = execSync(this.config.check_status, { timeout: timeout, stdio: ["pipe"] });
+      this.log.debug(`stdout: ${stdout}`);
       this.currentState = !this.config.invert_status;
-    } catch (error) {
+    } catch (e) {
+      this.log.debug(`stderr: ${e.stderr}`);
       this.currentState = false;
     }
 
@@ -98,15 +100,16 @@ class CommandAccessoryPlugin {
     let exitCode = 1;
     this.log.debug(`Running: ${cmd}`);
     try {
-      execSync(cmd);
+      let stdio = execSync(cmd);
+      this.log.debug(`stdout: ${stdout}`);
       exitCode = 0;
-    } catch (error) {
+    } catch {
       exitCode = 1;
     }
 
     // Set state depending on whether the command exited successfully or not.
     this.currentState = value ^ (exitCode != 0);
-    this.log.debug(`Returning: ${this.currentState}}`);
+    this.log.debug(`Returning: ${this.currentState}`);
     return this.currentState;
   }
 }
