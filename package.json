@@ -1,6 +1,6 @@
 {
   "name": "homebridge-plugin-command",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "This Homebridge plugin enables you to create virtual switches that can run any custom command when it is turned on or off.",
   "main": "index.js",
   "scripts": {
