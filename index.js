@@ -84,7 +84,7 @@ class CommandAccessoryPlugin {
       execSync(this.config.check_status, { timeout: timeout });
       this.currentState = !this.config.invert_status;
     } catch (error) {
-      this.currentState = false;
+      this.currentState = this.config.invert_status;
     }
 
     this.log.debug(`Returning: ${this.currentState}`);
